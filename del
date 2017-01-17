@@ -1,0 +1,42 @@
+#!/bin/sh
+
+
+# Author: Steven Gibson
+# Matric Number: 40270320
+# Date last updated: 26/11/2016
+# Script Title: del
+# This script will first check that the Trash directory exists
+# then move the file the user has specified to here
+
+# test if the trash directory exists 
+
+if test -d /root/Trash ; then
+echo "Trash exists files will be deleted to here" 
+else
+echo "Trash does not exist it will now be created"
+mkdir /root/Trash
+fi
+
+parameters="$@"
+
+if [ "$parameters" = "" ] ; then
+echo "Warning: del <filename>"
+else
+for arg in $parameters
+	do
+	# if user file exists then it will be moved  to trash
+	if test -e ${arg} ; then
+	mv ${arg} /root/Trash
+	echo "${arg} has been deleted"
+	# Append Trash Log file
+	echo $(readlink -f "${arg}") >> "/root/Trash/TLog.txt"
+	else
+	#error message
+	echo "File" ${arg} "Does not exist please check the spelling of the file"
+	fi
+done
+fi
+
+
+
+

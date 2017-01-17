@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# Autor: Steven Gibson
+# Matric Number: 40270320
+# Date Last updated: 24/11/2016
+# Script title: restore
+# This script will move (restore) a users file from the Trash Directory
+# back to it's orginal directory
+
+#tests if the user has entered a parameter
+parameter="$@"
+if [ "$parameter" = "" ] ; then
+echo "Usage Warning: restore <filename>"
+else
+# tests if file is in trash
+	if test -e /root/Trash/$1  ; then
+	location=$(grep $1 /root/Trash/TLog.txt |tail -1)
+	echo $location
+	restoreloc=$(dirname "$location") 
+	echo $restoreloc
+
+	# test if old location still exists if so move
+	if test -d $restoreloc ; then
+	sed -i "s|$location|restored|g" /root/Trash/TLog.txt  	#edits the Trash log file
+	
+	else
+	echo "Old location has been removed recreating sturcture" 
+	mkdir $restoreloc  		#recreats previous strcture if it has been deleted
+	sed -i "s|$location|restored|g" /root/Trash/TLog.txt	#edits the Trash log file
+	
+
+	fi
+
+	#Tests if the the file already exists in the location
+	if test -e $location ; then
+	mv /root/Trash/$1 $restoreloc/$1.bak #adds .bak to file if it already exists
+	echo $1 "was already in this directory" $restoreloc $1 "has been renamed "$1".bak"
+	else
+	mv /root/Trash/$1 $restoreloc
+	echo $1 "has been restored to" $restoreloc
+	fi
+	#error message
+	else
+	echo $1 "is not in the Trash plaese check spelling and try again"
+	fi
+
+fi
